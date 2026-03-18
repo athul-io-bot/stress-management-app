@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotional well-ness Tracker Student Stress Manager</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header>
+    <h1>Emotional well-ness And Student Stress Management</h1>
+    <p>Track your emotions and manage stress effectively</p>
+</header>
+
+<section id="checkin" class="page active">
+    <h2>Daily Check-in</h2>
+    
+    <div class="form-group">
+        <label>How do you feel?</label>
+        <div class="mood-options">
+            <button class="mood-btn" data-mood="5">😊 Great</button>
+            <button class="mood-btn" data-mood="4">🙂 Good</button>
+            <button class="mood-btn" data-mood="3">😐 Okay</button>
+            <button class="mood-btn" data-mood="2">😕 Bad</button>
+            <button class="mood-btn" data-mood="1">😢 Stressed</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Stress Level: <span id="stressNum">3</span>/10</label>
+        <input type="range" id="stress" min="1" max="10" value="3">
+    </div>
+
+    <div class="form-group">
+        <label>Sleep Hours</label>
+        <select id="sleep" class="sleep-select">
+            <option value="0">0 hours</option>
+            <option value="1">1 hour</option>
+            <option value="2">2 hours</option>
+            <option value="3">3 hours</option>
+            <option value="4">4 hours</option>
+            <option value="5">5 hours</option>
+            <option value="6">6 hours</option>
+            <option value="7" selected>7 hours</option>
+            <option value="8">8 hours</option>
+            <option value="9">9+ hours</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Reason for stress</label>
+        <div class="tags">
+            <button class="tag-btn" data-tag="Study">Study</button>
+            <button class="tag-btn" data-tag="Exams">Exams</button>
+            <button class="tag-btn" data-tag="Sleep">Sleep</button>
+            <button class="tag-btn" data-tag="Friends">Friends</button>
+            <button class="tag-btn" data-tag="Family">Family</button>
+            <button class="tag-btn" data-tag="Health">Health</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Notes</label>
+        <textarea id="notes" rows="2" placeholder="Optional notes..."></textarea>
+    </div>
+
+    <button onclick="saveEntry()" class="btn-save">Save Entry</button>
+    <!-- Risk + Plan -->
+<div id="riskBox" class="risk-box" style="display:none;">
+  <h3 id="riskTitle">Risk</h3>
+  <p id="riskReason"></p>
+  <div class="risk-actions">
+    <button class="btn-tool" onclick="goToPage('tools')">Open Relief Tools</button>
+  </div>
+</div>
+
+<!-- Today's plan -->
+<div id="planBox" class="plan-box" style="display:none;">
+  <h3>Today’s Plan</h3>
+  <ul id="planList"></ul>
+</div>
+
+    <div id="insightBox" class="plan-box" style="display:none;">
+<h3>Stress Insights</h3>
+<p id="insightText"></p>
+</div>
+
+<div id="crisisBox" class="risk-box" style="display:none;">
+<h3>⚠ Overwhelmed?</h3>
+<ul>
+<li>Take 5 deep breaths</li>
+<li>Drink water</li>
+<li>Step outside for 5 minutes</li>
+<li>Talk to a friend</li>
+</ul>
+<button class="btn-tool" onclick="goToPage('tools')">Start Breathing Exercise</button>
+</div>
+</section>
+
+<section id="history" class="page">
+    <h2>Your History</h2>
+    
+    <div class="stats-box">
+        <p>Total Entries: <b id="totalCount">0</b></p>
+        <p>Average Mood: <b id="avgMood">-</b></p>
+        <p>Average Sleep: <b id="avgSleep">-</b></p>
+    </div>
+    <div class="stats-box" style="margin-top:10px;">
+  <p>7-day Sleep Goal <b id="sleepGoalStat">-</b></p>
+  <p>7-day Stress Goal <b id="stressGoalStat">-</b></p>
+  <p>Check-in Streak <b id="streakStat">-</b></p>
+</div>
+
+
+    <div class="chart-container">
+        <canvas id="myChart"></canvas>
+    </div>
+    
+    <div id="entryList" class="entry-list">
+        <p style="padding:20px;text-align:center;color:#666">No entries yet</p>
+    </div>
+</section>
+
+<section id="tools" class="page">
+    <h2>Relief Tools</h2>
+    
+    <div class="tool-box">
+        <h3>Breathing Exercise</h3>
+        <p>Breathe in for 4 seconds, hold for 4, out for 6</p>
+        <button onclick="doBreathing()" class="btn-tool">Start Breathing</button>
+        <p id="breathStatus"></p>
+    </div>
+        <div class="tool-box">
+    <h3>🎮 Stress Relief Games</h3>
+    <div class="game-buttons">
+        <button onclick="startBubbleGame()" class="btn-tool">Bubble Pop</button>
+        <button onclick="startMemoryGame()" class="btn-tool">Memory Match</button>
+        <button onclick="startColorGame()" class="btn-tool">Color Reflex</button>
+        <button onclick="startTapGame()" class="btn-tool">Tap Challenge</button>
+    </div>
+
+    <div id="gameArea" style="margin-top:15px;"></div>
+    </div>
+    <div class="tool-box">
+        <h3>5-4-3-2-1 Grounding</h3>
+        <ul>
+            <li>5 things you see</li>
+            <li>4 things you feel</li>
+            <li>3 things you hear</li>
+            <li>2 things you smell</li>
+            <li>1 thing you taste</li>
+        </ul>
+    </div>
+</section>
+
+<nav>
+    <button onclick="goToPage('checkin')" class="nav-btn active" id="nav-checkin">Check-in</button>
+    <button onclick="goToPage('history')" class="nav-btn" id="nav-history">History</button>
+    <button onclick="goToPage('tools')" class="nav-btn" id="nav-tools">Tools</button>
+</nav>
+
+<script src="script.js"></script>
+</body>
+</html>
