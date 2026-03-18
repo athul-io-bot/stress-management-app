@@ -82,7 +82,7 @@ const KEYS = {
   entries: "mindtrackentries",
 };
 
-// UTILITY FUNCTIONS
+
 function toISODate(d) {
   return new Date(d).toISOString().split("T")[0];
 }
@@ -600,7 +600,7 @@ const games = {
 // Make games globally accessible for inline handlers in tap game
 window.games = games;
 
-// Expose game starter functions
+
 window.startBubbleGame = () => games.bubble();
 window.startMemoryGame = () => games.memory();
 window.startColorGame = () => games.color();
@@ -611,4 +611,9 @@ document.addEventListener("DOMContentLoaded", () => {
   state.entries = storage.get(KEYS.entries, []);
   setupEventListeners();
   initChart();
+  if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(reg => console.log('Service Worker registered', reg))
+    .catch(err => console.log('Service Worker registration failed', err));
+}
 });
