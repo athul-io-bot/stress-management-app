@@ -146,24 +146,7 @@ textarea {
     background: #357abd;
 }
 
-.tip-box {
-    background: #fff3cd;
-    padding: 15px;
-    border-radius: 5px;
-    margin-top: 15px;
-    border-left: 4px solid #ffc107;
-}
 
-.tip-box h3 {
-    color: #856404;
-    font-size: 14px;
-    margin-bottom: 5px;
-}
-
-.tip-box p {
-    color: #856404;
-    font-size: 14px;
-}
 
 /* Stats box - UPDATED for 3 columns */
 .stats-box {
@@ -274,23 +257,6 @@ canvas {
     font-size: 14px;
 }
 
-.btn-stop {
-    padding: 10px 20px;
-    background: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-#timerDisplay {
-    font-size: 32px;
-    color: #4a90e2;
-    font-weight: bold;
-    text-align: center;
-    margin: 10px 0;
-}
 
 #breathStatus {
     color: #4a90e2;
@@ -406,36 +372,3 @@ nav {
   margin-top: 12px;
 }
 .plan-box ul { margin: 8px 0 0; padding-left: 18px; color: #555; }
-
-.task-row {
-  display: grid;
-  grid-template-columns: 1fr 140px 80px;
-  gap: 8px;
-  margin-top: 10px;
-}
-.task-row input {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-}
-.task-list { margin-top: 10px; }
-.task-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  border: 1px solid #eee;
-  border-radius: 6px;
-  margin-bottom: 8px;
-  background: #fff;
-}
-.task-item small { color: #777; }
-.task-item button {
-  background: #dc3545;
-  color: #fff;
-  border: none;
-  padding: 8px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}

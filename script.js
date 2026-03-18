@@ -1,22 +1,60 @@
 // MindTrack - Student Stress Management & Emotional Wellness Tracker
 // Complete implementation with Risk Detection, Personalized Plans, Goals, and Tasks
 
-// DATA CONFIG
 const CONFIG = {
-  tips: [
-    "Walk for 10 minutes to reduce stress",
-    "Drink water - dehydration increases stress", 
-    "Try Pomodoro: 25 min study, 5 min break",
-    "Call a friend - talking helps",
-    "Write 3 things you're grateful for",
-    "Stretch for 5 minutes",
-    "Listen to calm music",
-    "Get 7-8 hours sleep tonight",
-    "Eat a healthy snack"
-  ],
-  emojis: ["😢", "🙁", "😐", "🙂", "😊"],
-  colors: ["Red", "Blue", "Green", "Yellow"]
+  emojis: ["😊", "🙂", "😐", "😕", "😢"],
+  colors: ["Red", "Green", "Blue", "Yellow"]
 };
+
+function generatePlan(mood, stress, sleep, tags) {
+    let plan = [];
+
+    // Mood
+    if (mood <= 2) {
+        plan.push("Take it slow today");
+        plan.push("Talk to someone you trust");
+    } else if (mood == 3) {
+        plan.push("Do light tasks only");
+    } else {
+        plan.push("Focus on important work");
+    }
+
+    // Stress
+    if (stress >= 7) {
+        plan.push("Do a 5-minute breathing exercise");
+        plan.push("Avoid heavy workload");
+    } else if (stress >= 4) {
+        plan.push("Take breaks regularly");
+    }
+
+    // Sleep
+    if (sleep <= 5) {
+        plan.push("Take rest or short nap");
+    }
+
+    // Tags
+    if (tags.includes("Study")) {
+        plan.push("Use Pomodoro technique (25 min)");
+    }
+    if (tags.includes("Exams")) {
+        plan.push("Revise key topics only");
+    }
+    if (tags.includes("Friends")) {
+        plan.push("Spend time with friends");
+    }
+    if (tags.includes("Family")) {
+        plan.push("Have a calm conversation");
+    }
+    if (tags.includes("Health")) {
+        plan.push("Do light exercise");
+    }
+
+    if (plan.length === 0) {
+        plan.push("Maintain normal routine");
+    }
+
+    return plan;
+}
 
 // Single state object instead of multiple globals
 const state = {
@@ -24,7 +62,6 @@ const state = {
   selectedMood: null,
   selectedTags: [],
   chart: null,
-  tasks: [],
   games: {
     tap: { active: false, score: 0, timer: null, timeLeft: 10 }
   }
@@ -43,7 +80,6 @@ const storage = {
 
 const KEYS = {
   entries: "mindtrackentries",
-  tasks: "mindtracktasks"
 };
 
 // UTILITY FUNCTIONS
@@ -84,51 +120,41 @@ function computeRisk(last7) {
   return { level, reason, highStressDays, lowSleepDays, lowMoodDays };
 }
 
-function buildPersonalPlan(entry){
+// RENDER RISK & PLAN (Features 1+2)
+function renderRiskAndPlan() {
+  const last7 = getLastNDaysEntries(7);
+  const riskBox = document.getElementById("riskBox");
+  const planBox = document.getElementById("planBox");
+  
+  if (!riskBox || !planBox) return;
 
- const plan=[]
+  if (!last7.length) {
+    riskBox.style.display = "none";
+    planBox.style.display = "none";
+    return;
+  }
 
- if(entry.stress>=8){
-   plan.push("Take 5 slow deep breaths")
-   plan.push("Drink a glass of water")
-   plan.push("Walk for 10 minutes")
-   plan.push("Break your task into 3 small steps")
- }
+  const r = computeRisk(last7);
+  document.getElementById("riskTitle").textContent = `Risk Level: ${r.level}`;
+  document.getElementById("riskReason").textContent = r.reason;
+  riskBox.style.display = "block";
 
- if(entry.tags?.includes("Exams")){
-   plan.push("Study for 25 minutes then take a 5 minute break")
-   plan.push("Focus on one topic at a time")
- }
+  const latest = last7[last7.length - 1];
+  const plan = generatePlan(
+    latest.mood,
+    latest.stress,
+    latest.sleep,
+    latest.tags || []
+  );
+  const ul = document.getElementById("planList");
+  ul.innerHTML = plan.map(x => `<li>${x}</li>`).join("");
+  planBox.style.display = "block";
 
- if(entry.sleep<=5){
-   plan.push("Sleep earlier tonight")
-   plan.push("Avoid screens 30 minutes before bed")
- }
-
- if(entry.mood<=2){
-   plan.push("Try grounding exercise 5-4-3-2-1")
- }
-
- // ✅ DEFAULT PLAN if nothing triggered
- if(plan.length===0){
-   plan.push("Maintain your routine today")
-   plan.push("Take a short break every 1 hour")
-   plan.push("Stay hydrated and stretch for 5 minutes")
- }
-
- return plan.slice(0,5)
+  // Dynamic border color
+  const colors = { High: "#e74c3c", Medium: "#f39c12", Low: "#2ecc71" };
+  riskBox.style.borderLeftColor = colors[r.level];
 }
-function detectCrisis(entry){
 
- const crisisBox=document.getElementById("crisisBox")
-
- if(entry.stress>=9 || entry.mood<=1){
-   crisisBox.style.display="block"
- }else{
-   crisisBox.style.display="none"
- }
-
-}
 // FEATURE 3: GOALS & STREAK
 function computeStreak() {
   if (!state.entries.length) return 0;
@@ -165,103 +191,6 @@ function renderGoalsStats() {
   streakEl.textContent = `${computeStreak()} days`;
 }
 
-// FEATURE 4: TASKS MODULE
-function addTask() {
-  const textEl = document.getElementById("taskText");
-  const dueEl = document.getElementById("taskDue");
-  if (!textEl || !dueEl) return;
-
-  const text = textEl.value.trim();
-  const due = dueEl.value || toISODate(new Date());
-  if (!text) return alert("Enter a task.");
-
-  const task = { 
-    id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()), 
-    text, 
-    due, 
-    done: false, 
-    createdAt: Date.now() 
-  };
-  state.tasks.push(task);
-  storage.set(KEYS.tasks, state.tasks);
-
-  textEl.value = "";
-  dueEl.value = "";
-  renderTasks();
-}
-
-function toggleTask(id) {
-  const t = state.tasks.find(x => x.id === id);
-  if (!t) return;
-  t.done = !t.done;
-  storage.set(KEYS.tasks, state.tasks);
-  renderTasks();
-}
-
-function deleteTask(id) {
-  state.tasks = state.tasks.filter(x => x.id !== id);
-  storage.set(KEYS.tasks, state.tasks);
-  renderTasks();
-}
-
-function renderTasks() {
-  const list = document.getElementById("taskList");
-  if (!list) return;
-
-  const today = toISODate(new Date());
-  const tasks = state.tasks
-    .filter(t => t.due >= today)
-    .sort((a, b) => a.due.localeCompare(b.due))
-    .slice(0, 8);
-
-  if (!tasks.length) {
-    list.innerHTML = `<p class="empty-state">No tasks yet. Add one small task for today.</p>`;
-    return;
-  }
-
-  list.innerHTML = tasks.map(t => `
-    <div class="task-item">
-      <div>
-        <div>
-          <input type="checkbox" ${t.done ? "checked" : ""} onchange="toggleTask('${t.id}')" />
-          <span style="${t.done ? "text-decoration:line-through;color:#777;" : ""}">${t.text}</span>
-        </div>
-        <small>Due: ${t.due}</small>
-      </div>
-      <button onclick="deleteTask('${t.id}')">Delete</button>
-    </div>
-  `).join("");
-}
-
-// RENDER RISK & PLAN (Features 1+2)
-function renderRiskAndPlan() {
-  const last7 = getLastNDaysEntries(7);
-  const riskBox = document.getElementById("riskBox");
-  const planBox = document.getElementById("planBox");
-  
-  if (!riskBox || !planBox) return;
-
-  if (!last7.length) {
-    riskBox.style.display = "none";
-    planBox.style.display = "none";
-    return;
-  }
-
-  const r = computeRisk(last7);
-  document.getElementById("riskTitle").textContent = `Risk Level: ${r.level}`;
-  document.getElementById("riskReason").textContent = r.reason;
-  riskBox.style.display = "block";
-
-  const latest = last7[last7.length - 1];
-  const plan = buildPersonalPlan(latest);
-  const ul = document.getElementById("planList");
-  ul.innerHTML = plan.map(x => `<li>${x}</li>`).join("");
-  planBox.style.display = "block";
-
-  // Dynamic border color
-  const colors = { High: "#e74c3c", Medium: "#f39c12", Low: "#2ecc71" };
-  riskBox.style.borderLeftColor = colors[r.level];
-}
 
 // CHART
 function initChart() {
@@ -323,8 +252,7 @@ function saveEntry() {
   }
 
   storage.set(KEYS.entries, state.entries);
-  generateInsights()
-  detectCrisis(entry)
+  generateInsights();
   renderRiskAndPlan();
   resetForm();
 
@@ -344,25 +272,25 @@ function resetForm() {
   document.getElementById("sleep").value = 7;
 }
 
-function generateInsights(){
-  const insightBox=document.getElementById("insightBox")
-  const insightText=document.getElementById("insightText")
+function generateInsights() {
+  const insightBox = document.getElementById("insightBox");
+  const insightText = document.getElementById("insightText");
 
-  if(state.entries.length<3) return
+  if (state.entries.length < 3) return;
 
-  let lowSleepStress=0
+  let lowSleepStress = 0;
 
-  state.entries.forEach(e=>{
-    if(e.sleep<6 && e.stress>6) lowSleepStress++
-  })
+  state.entries.forEach(e => {
+    if (e.sleep < 6 && e.stress > 6) lowSleepStress++;
+  });
 
-  if(lowSleepStress>=2){
-    insightText.textContent="Your stress increases when you sleep less than 6 hours. Try targeting 7‑8 hours sleep."
-  }else{
-    insightText.textContent="Your stress levels are fairly stable. Keep maintaining your routine."
+  if (lowSleepStress >= 2) {
+    insightText.textContent = "Your stress increases when you sleep less than 6 hours. Try targeting 7‑8 hours sleep.";
+  } else {
+    insightText.textContent = "Your stress levels are fairly stable. Keep maintaining your routine.";
   }
 
-  insightBox.style.display="block"
+  insightBox.style.display = "block";
 }
 
 // HISTORY RENDERING
@@ -487,10 +415,8 @@ async function doBreathing() {
   status.textContent = "Done! Feel better?";
 }
 
-// GAMES (Consolidated)
-// GAMES (Fixed)
+// GAMES
 const games = {
-  // Helper - get fresh DOM reference every time
   getArea() {
     return document.getElementById("gameArea");
   },
@@ -578,7 +504,6 @@ const games = {
 
   color() {
     const area = this.getArea();
-    const self = this;
     
     const loadRound = () => {
       const text = CONFIG.colors[Math.floor(Math.random() * 4)];
@@ -597,7 +522,6 @@ const games = {
         </div>
       `;
       
-      // Add buttons with proper event listeners
       const btnContainer = document.getElementById("colorButtons");
       CONFIG.colors.forEach(c => {
         const btn = document.createElement("button");
@@ -617,7 +541,6 @@ const games = {
     loadRound();
   },
 
-  // RENAMED from tap() to initTap() - initializes the game
   initTap() {
     const area = this.getArea();
     const s = state.games.tap;
@@ -651,7 +574,6 @@ const games = {
     }, 1000);
   },
 
-  // RENAMED from tap() to doTap() - handles the tap action
   doTap() {
     const s = state.games.tap;
     if (!s.active) return;
@@ -675,22 +597,18 @@ const games = {
   }
 };
 
-// Expose to global scope - FIXED: use arrow functions to preserve 'this' context
+// Make games globally accessible for inline handlers in tap game
+window.games = games;
+
+// Expose game starter functions
 window.startBubbleGame = () => games.bubble();
 window.startMemoryGame = () => games.memory();
 window.startColorGame = () => games.color();
-window.startTapGame = () => games.initTap(); // CHANGED to initTap
-
-
-window.addTask = addTask;
-window.toggleTask = toggleTask;
-window.deleteTask = deleteTask;
+window.startTapGame = () => games.initTap();
 
 // INITIALIZATION
 document.addEventListener("DOMContentLoaded", () => {
   state.entries = storage.get(KEYS.entries, []);
-  state.tasks = storage.get(KEYS.tasks, []);
   setupEventListeners();
   initChart();
-  renderTasks();
 });
