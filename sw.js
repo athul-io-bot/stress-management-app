@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wellness-tracker-v3';
+const CACHE_NAME = 'wellness-tracker-v2';
 const urlsToCache = [
   './',        
   'index.html',
@@ -17,6 +17,10 @@ self.addEventListener('install', event => {
       .then(cache => cache.addAll(urlsToCache))
       .catch(err => console.error('Cache addAll failed:', err))
   );
+  self.addEventListener('install', event => {
+  self.skipWaiting();   // <-- add this
+  event.waitUntil( ... );
+});
 });
 // Fetch event – serve from cache, fallback to network
 self.addEventListener('fetch', event => {
@@ -38,4 +42,8 @@ self.addEventListener('activate', event => {
       }))
     )
   );
+  self.addEventListener('activate', event => {
+  event.waitUntil(clients.claim());   // <-- add this
+  // ... rest of your activate code
+});
 });
