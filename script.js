@@ -616,4 +616,23 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(reg => console.log('Service Worker registered', reg))
     .catch(err => console.log('Service Worker registration failed', err));
 }
+// Editable name - simple
+const nameInput = document.getElementById('userName');
+if (nameInput) {
+    // Load saved name
+    nameInput.value = localStorage.getItem('userName') || '';
+    // Save on change
+    nameInput.addEventListener('change', () => {
+        localStorage.setItem('userName', nameInput.value.trim());
+    });
+}
+// Show attention-grabbing popup if name exists
+const savedName = localStorage.getItem('userName');
+if (savedName && savedName.trim()) {
+    const popup = document.createElement('div');
+    popup.className = 'center-popup';
+    popup.innerHTML = `🎉 Hi ${savedName.trim()}! 🎉`;
+    document.body.appendChild(popup);
+    setTimeout(() => popup.remove(), 2000); // remove after 2 seconds
+}
 });

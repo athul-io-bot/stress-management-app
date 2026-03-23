@@ -372,3 +372,63 @@ nav {
   margin-top: 12px;
 }
 .plan-box ul { margin: 8px 0 0; padding-left: 18px; color: #555; }
+.fa, .fas, .far {
+    margin-right: 5px;
+}
+
+
+
+.name-input {
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+    background: #fff;
+}
+.center-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #ff6a00, #ee0979);
+    color: white;
+    padding: 25px 50px;
+    border-radius: 60px;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    z-index: 10000;
+    box-shadow: 0 0 30px rgba(238, 9, 121, 0.6);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    animation: bouncePop 0.5s ease-out forwards, fadeOut 1.5s ease-in forwards 0.5s;
+}
+
+@keyframes bouncePop {
+    0% {
+        transform: translate(-50%, -50%) scale(0.3);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.05);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
