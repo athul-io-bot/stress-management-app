@@ -1,5 +1,3 @@
-// MindTrack - Student Stress Management & Emotional Wellness Tracker
-// Complete implementation with Risk Detection, Personalized Plans, Goals, and Tasks
 
 const CONFIG = {
   emojis: ["😊", "🙂", "😐", "😕", "😢"],
@@ -631,8 +629,8 @@ const savedName = localStorage.getItem('userName');
 if (savedName && savedName.trim()) {
     const popup = document.createElement('div');
     popup.className = 'center-popup';
-    popup.innerHTML = `🎉 Hi ${savedName.trim()}! 🎉`;
+    popup.innerHTML = ` Hi ${savedName.trim()}! `;
     document.body.appendChild(popup);
-    setTimeout(() => popup.remove(), 2000); // remove after 2 seconds
+    setTimeout(() => popup.remove(), 5000); // remove after 5 seconds
 }
 });

@@ -393,20 +393,20 @@ nav {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: linear-gradient(135deg, #ff6a00, #ee0979);
+    background: linear-gradient(135deg, #00aeff, #2d1cbf);
     color: white;
-    padding: 25px 50px;
-    border-radius: 60px;
-    font-size: 28px;
+    padding: 100px 150px;
+    border-radius: 10px;
+    font-size: 40px;
     font-weight: bold;
     text-align: center;
     z-index: 10000;
-    box-shadow: 0 0 30px rgba(238, 9, 121, 0.6);
+    box-shadow: 0 0 30px rgba(247, 85, 163, 0.6);
     white-space: nowrap;
     display: flex;
     align-items: center;
     gap: 15px;
-    animation: bouncePop 0.5s ease-out forwards, fadeOut 1.5s ease-in forwards 0.5s;
+    animation: bouncePop 0.5s ease-out forwards, fadeOut 2s ease-in forwards 0.5s;
 }
 
 @keyframes bouncePop {
